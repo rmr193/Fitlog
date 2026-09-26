@@ -19,6 +19,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+import { FALLBACK_WORKOUTS } from "@/data/fallbackWorkouts";
+
 interface WorkoutDetailPageProps {
   params: Promise<{ id: string }>;
 }
@@ -50,6 +52,13 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
       try {
         const res = await fetch(`https://api.abcz.workers.dev/api/fitlog/${workoutId}`);
         if (!res.ok) {
+          // If live API returns 429 rate limit or not ok, fallback to local dataset
+          console.warn(`Fitlog detail API returned ${res.status}. Falling back to cached exercise.`);
+          const localWorkout = FALLBACK_WORKOUTS.find((w) => w.id === workoutId);
+          if (localWorkout && isMounted) {
+            setWorkout(localWorkout);
+            return;
+          }
           throw new Error(`Exercise not found (HTTP ${res.status})`);
         }
         const data: Workout = await res.json();
@@ -57,8 +66,11 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           setWorkout(data);
         }
       } catch (err: unknown) {
-        console.error("Error fetching workout detail:", err);
-        if (isMounted) {
+        console.warn("Error fetching workout detail, checking fallback:", err);
+        const localWorkout = FALLBACK_WORKOUTS.find((w) => w.id === workoutId);
+        if (localWorkout && isMounted) {
+          setWorkout(localWorkout);
+        } else if (isMounted) {
           setError("Failed to load workout details. The exercise might not exist or the server is unavailable.");
         }
       } finally {

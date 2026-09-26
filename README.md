@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💪 FitLog — Train With Intent. Log Every Set.
 
-## Getting Started
+A dark, high-performance gym companion and workout tracker built with **Next.js App Router**, **TypeScript**, and **Tailwind CSS**. FitLog lets you browse compound lifts, review exercise specifications, schedule lifts into your daily routine (capped at 5 lifts), track live workout metrics, and persist your training log across sessions.
 
-First, run the development server:
+---
+
+## 🚀 Live Demo & Repository
+
+- **Live Link:** [https://fitlog-app.vercel.app](https://fitlog-app.vercel.app) *(Replace with your deployed URL)*
+- **GitHub Repository:** [https://github.com/your-username/fitlog](https://github.com/your-username/fitlog) *(Replace with your repository URL)*
+
+---
+
+## 🛠️ Technologies Used
+
+| Technology | Purpose |
+| :--- | :--- |
+| **Next.js 16 (App Router)** | Core framework, server rendering, dynamic routing, and fast navigation |
+| **TypeScript** | Type safety, maintainability, and clean data contracts |
+| **Tailwind CSS v4** | Custom gym dark theme, responsive utilities, and fluid animations |
+| **Lucide React** | Modern, lightweight fitness and action icons |
+| **Sonner** | Interactive, dark-themed toast notification system |
+| **Google Fonts (Oswald & Inter)** | Aggressive uppercase gym display typography paired with clean body text |
+
+---
+
+## 🌟 5 Key Features
+
+### 1. 🏋️ Curated 12-Lift Workout Library with Interactive Filters
+- Fetches real-time workout specifications from the FitLog API with smooth skeleton card loading states.
+- Responsive **3x4 grid** on desktop collapsing smoothly for tablet and mobile devices.
+- Includes quick category filtering chips (`CHEST`, `BACK`, `LEGS`, `ARMS`, `SHOULDERS`, `CORE`) and a live keyword search bar.
+
+### 2. ⚡ Challenge C1: Dynamic Multi-Attribute Sorting
+- Dedicated **"Sort By" dropdown** with custom chevron icon allowing instant client-side re-sorting.
+- Supports sorting by **Duration (Mins)**, **Calories Burned (Kcal)**, and **Rating (High to Low)**.
+- Defaults to Duration and updates card arrangements dynamically without reloading.
+
+### 3. 📖 Two-Column Detailed Exercise View (`/workout/:id`)
+- Visual media column with high-resolution illustration, difficulty badge, and rating overlay.
+- Detailed **Key Specifications** panel: Equipment, Difficulty, Target Sets, Reps per Set, Duration, and Calories.
+- Ordered 4-step exercise instructions with numbered indicator badges.
+- Direct **"Add to Today's Plan"** and **"Save for Later"** buttons with instant feedback toasts.
+
+### 4. 📊 Live Metrics Summary Dashboard & 5-Lift Daily Cap
+- Dynamic stat cards in `/my-plan` that calculate **Total Exercises**, **Total Estimated Minutes**, and **Total Calories Burned** live.
+- Enforces a disciplined **5-lift daily cap** to keep training sessions focused, notifying users when the limit is reached.
+- Real-time navbar badge counters: filled accent pill for **Plan** and bordered pill for **Saved**.
+
+### 5. 🎯 Challenge C3: Interactive Plan Actions & LocalStorage Persistence
+- **Mark as Done**: Completed workouts receive visual strikethrough, glowing badges, and milestone toast notifications.
+- **Remove (X)**: Easily rack away completed or unwanted lifts from the plan with confirmation toasts.
+- **LocalStorage Sync**: Both Today's Plan and Saved workouts persist seamlessly across page reloads without hydration mismatches.
+
+---
+
+## 💻 Getting Started Locally
+
+### Prerequisites
+- Node.js `v18.17` or higher
+- npm, yarn, pnpm, or bun
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/fitlog.git
+   cd fitlog
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser:**
+   Navigate to [http://localhost:3000](http://localhost:3000).
+
+---
+
+## 📦 Production Build & Deployment
+
+To verify and produce an optimized production bundle:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Deployable with zero configuration on **Vercel**, **Netlify**, or **Cloudflare Pages**.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📄 License & Credits
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+&copy; 2026 FitLog — Workout Library. Train hard, log honest.

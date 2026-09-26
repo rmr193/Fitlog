@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useWorkout } from "@/context/WorkoutContext";
-import { Dumbbell, Bookmark, Menu, X, CalendarCheck } from "lucide-react";
+import { Bookmark, Menu, X, CalendarCheck } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();

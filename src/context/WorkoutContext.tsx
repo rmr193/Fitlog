@@ -48,15 +48,11 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
       const storedSaved = localStorage.getItem(STORAGE_KEYS.SAVED_WORKOUTS);
       const storedDone = localStorage.getItem(STORAGE_KEYS.COMPLETED_WORKOUTS);
 
-      if (storedPlan) {
-        setTodayPlan(JSON.parse(storedPlan));
-      }
-      if (storedSaved) {
-        setSavedWorkouts(JSON.parse(storedSaved));
-      }
-      if (storedDone) {
-        setCompletedWorkoutIds(JSON.parse(storedDone));
-      }
+      // Client-only hydration to prevent SSR mismatch
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (storedPlan) setTodayPlan(JSON.parse(storedPlan));
+      if (storedSaved) setSavedWorkouts(JSON.parse(storedSaved));
+      if (storedDone) setCompletedWorkoutIds(JSON.parse(storedDone));
     } catch (error) {
       console.error("Failed to load workout state from localStorage:", error);
     } finally {
@@ -64,36 +60,17 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Save changes to localStorage whenever state updates
+  // Persist workout state changes to localStorage
   useEffect(() => {
     if (!isLoaded) return;
     try {
       localStorage.setItem(STORAGE_KEYS.TODAY_PLAN, JSON.stringify(todayPlan));
-    } catch (e) {
-      console.error("Failed to save todayPlan to localStorage:", e);
-    }
-  }, [todayPlan, isLoaded]);
-
-  useEffect(() => {
-    if (!isLoaded) return;
-    try {
       localStorage.setItem(STORAGE_KEYS.SAVED_WORKOUTS, JSON.stringify(savedWorkouts));
+      localStorage.setItem(STORAGE_KEYS.COMPLETED_WORKOUTS, JSON.stringify(completedWorkoutIds));
     } catch (e) {
-      console.error("Failed to save savedWorkouts to localStorage:", e);
+      console.error("Failed to persist workout state to localStorage:", e);
     }
-  }, [savedWorkouts, isLoaded]);
-
-  useEffect(() => {
-    if (!isLoaded) return;
-    try {
-      localStorage.setItem(
-        STORAGE_KEYS.COMPLETED_WORKOUTS,
-        JSON.stringify(completedWorkoutIds)
-      );
-    } catch (e) {
-      console.error("Failed to save completedWorkoutIds to localStorage:", e);
-    }
-  }, [completedWorkoutIds, isLoaded]);
+  }, [todayPlan, savedWorkouts, completedWorkoutIds, isLoaded]);
 
   const isWorkoutInPlan = (id: number) => {
     return todayPlan.some((w) => w.id === id);

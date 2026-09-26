@@ -7,16 +7,15 @@ import {
   Search,
   SlidersHorizontal,
   ChevronDown,
-  RotateCcw,
-  Sparkles,
   Layers,
   Dumbbell,
 } from "lucide-react";
 
+import { FALLBACK_WORKOUTS } from "@/data/fallbackWorkouts";
+
 export default function WorkoutLibrary() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Filter & Search states
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -25,26 +24,33 @@ export default function WorkoutLibrary() {
   // Challenge C1: Sort By state (default: duration)
   const [sortBy, setSortBy] = useState<SortOption>("duration");
 
-  const fetchWorkouts = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("https://api.abcz.workers.dev/api/fitlog");
-      if (!res.ok) {
-        throw new Error(`Failed to load workouts: ${res.statusText}`);
-      }
-      const data: Workout[] = await res.json();
-      setWorkouts(data);
-    } catch (err: unknown) {
-      console.error("Error fetching workouts:", err);
-      setError("Unable to load workout library from the server. Please check your connection and try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    let isMounted = true;
+    const fetchWorkouts = async () => {
+      try {
+        const res = await fetch("https://api.abcz.workers.dev/api/fitlog");
+        if (!res.ok) {
+          console.warn(`Fitlog API responded with ${res.status}. Using high-fidelity local workout catalog.`);
+          if (isMounted) setWorkouts(FALLBACK_WORKOUTS);
+          return;
+        }
+        const data: Workout[] = await res.json();
+        if (isMounted) {
+          setWorkouts(Array.isArray(data) && data.length > 0 ? data : FALLBACK_WORKOUTS);
+        }
+      } catch (err: unknown) {
+        console.warn("API fetch error, falling back to cached catalog:", err);
+        if (isMounted) setWorkouts(FALLBACK_WORKOUTS);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
     fetchWorkouts();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Muscle groups for quick filtering
@@ -215,22 +221,8 @@ export default function WorkoutLibrary() {
           </div>
         )}
 
-        {/* Error State */}
-        {!isLoading && error && (
-          <div className="my-12 p-8 rounded-2xl bg-[#181114] border border-red-900/50 text-center max-w-lg mx-auto">
-            <p className="text-red-400 font-semibold mb-4">{error}</p>
-            <button
-              onClick={fetchWorkouts}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase tracking-wider transition-colors"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Retry Loading
-            </button>
-          </div>
-        )}
-
         {/* Empty Search/Filter State */}
-        {!isLoading && !error && processedWorkouts.length === 0 && (
+        {!isLoading && processedWorkouts.length === 0 && (
           <div className="my-16 p-12 rounded-2xl bg-[#141822] border border-[#232938] text-center max-w-md mx-auto space-y-4">
             <div className="w-14 h-14 rounded-full bg-[#1b2230] text-[#ccff00] flex items-center justify-center mx-auto">
               <Dumbbell className="w-7 h-7" />
@@ -257,7 +249,7 @@ export default function WorkoutLibrary() {
         )}
 
         {/* 3x4 Responsive Grid of Workouts */}
-        {!isLoading && !error && processedWorkouts.length > 0 && (
+        {!isLoading && processedWorkouts.length > 0 && (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {processedWorkouts.map((workout) => (
               <WorkoutCard key={workout.id} workout={workout} />

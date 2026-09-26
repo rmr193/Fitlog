@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Workout } from "@/types/workout";
 import {
@@ -18,25 +18,17 @@ import {
   ExternalLink,
   Plus,
   ArrowRight,
-  TrendingUp,
   Activity,
 } from "lucide-react";
 
 function MyPlanInner() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") === "saved" ? "saved" : "today";
+  const activeTab = searchParams.get("tab") === "saved" ? "saved" : "today";
 
-  const [activeTab, setActiveTab] = useState<"today" | "saved">(initialTab);
-
-  // Sync tab with URL search parameter if it changes
-  useEffect(() => {
-    const tabParam = searchParams.get("tab");
-    if (tabParam === "saved") {
-      setActiveTab("saved");
-    } else if (tabParam === "today") {
-      setActiveTab("today");
-    }
-  }, [searchParams]);
+  const handleTabChange = (tab: "today" | "saved") => {
+    router.replace(`/my-plan?tab=${tab}`, { scroll: false });
+  };
 
   const {
     todayPlan,
@@ -157,7 +149,7 @@ function MyPlanInner() {
         {/* Tabs: Today's Plan / Saved */}
         <div className="border-b border-[#1f2533] flex items-center gap-4">
           <button
-            onClick={() => setActiveTab("today")}
+            onClick={() => handleTabChange("today")}
             className={`pb-4 px-2 text-base sm:text-lg font-bold uppercase tracking-wider flex items-center gap-2.5 transition-all duration-200 border-b-2 ${
               activeTab === "today"
                 ? "border-[#ccff00] text-white"
@@ -178,7 +170,7 @@ function MyPlanInner() {
           </button>
 
           <button
-            onClick={() => setActiveTab("saved")}
+            onClick={() => handleTabChange("saved")}
             className={`pb-4 px-2 text-base sm:text-lg font-bold uppercase tracking-wider flex items-center gap-2.5 transition-all duration-200 border-b-2 ${
               activeTab === "saved"
                 ? "border-[#ccff00] text-white"

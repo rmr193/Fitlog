@@ -3,6 +3,7 @@ import { Inter, Oswald } from "next/font/google";
 import { Toaster } from "sonner";
 import { WorkoutProvider } from "@/context/WorkoutContext";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 const inter = Inter({
@@ -37,6 +38,7 @@ export default function RootLayout({
         <WorkoutProvider>
           <Navbar />
           <main className="flex-1 flex flex-col">{children}</main>
+          <Footer />
         </WorkoutProvider>
         <Toaster
           position="top-right"
