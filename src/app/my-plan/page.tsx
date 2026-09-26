@@ -1,9 +1,9 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Workout } from "@/types/workout";
 import {
@@ -22,13 +22,9 @@ import {
 } from "lucide-react";
 
 function MyPlanInner() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get("tab") === "saved" ? "saved" : "today";
-
-  const handleTabChange = (tab: "today" | "saved") => {
-    router.replace(`/my-plan?tab=${tab}`, { scroll: false });
-  };
+  const initialTab = searchParams.get("tab") === "saved" ? "saved" : "today";
+  const [activeTab, setActiveTab] = useState<"today" | "saved">(initialTab);
 
   const {
     todayPlan,
@@ -149,7 +145,7 @@ function MyPlanInner() {
         {/* Tabs: Today's Plan / Saved */}
         <div className="border-b border-[#1f2533] flex items-center gap-4">
           <button
-            onClick={() => handleTabChange("today")}
+            onClick={() => setActiveTab("today")}
             className={`pb-4 px-2 text-base sm:text-lg font-bold uppercase tracking-wider flex items-center gap-2.5 transition-all duration-200 border-b-2 ${
               activeTab === "today"
                 ? "border-[#ccff00] text-white"
@@ -170,7 +166,7 @@ function MyPlanInner() {
           </button>
 
           <button
-            onClick={() => handleTabChange("saved")}
+            onClick={() => setActiveTab("saved")}
             className={`pb-4 px-2 text-base sm:text-lg font-bold uppercase tracking-wider flex items-center gap-2.5 transition-all duration-200 border-b-2 ${
               activeTab === "saved"
                 ? "border-[#ccff00] text-white"

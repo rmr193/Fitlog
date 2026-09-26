@@ -45,47 +45,40 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const [imgError, setImgError] = useState<boolean>(false);
 
   useEffect(() => {
-    let isMounted = true;
-    const fetchDetail = async () => {
+    async function loadWorkout() {
       setIsLoading(true);
       setError(null);
+
       try {
         const res = await fetch(`https://api.abcz.workers.dev/api/fitlog/${workoutId}`);
-        if (!res.ok) {
-          // If live API returns 429 rate limit or not ok, fallback to local dataset
-          console.warn(`Fitlog detail API returned ${res.status}. Falling back to cached exercise.`);
-          const localWorkout = FALLBACK_WORKOUTS.find((w) => w.id === workoutId);
-          if (localWorkout && isMounted) {
-            setWorkout(localWorkout);
-            return;
-          }
-          throw new Error(`Exercise not found (HTTP ${res.status})`);
-        }
-        const data: Workout = await res.json();
-        if (isMounted) {
+        if (res.ok) {
+          const data: Workout = await res.json();
           setWorkout(data);
+        } else {
+          // Fallback to local workout data if API fails
+          const fallback = FALLBACK_WORKOUTS.find((w) => w.id === workoutId);
+          if (fallback) {
+            setWorkout(fallback);
+          } else {
+            setError("Workout not found.");
+          }
         }
-      } catch (err: unknown) {
-        console.warn("Error fetching workout detail, checking fallback:", err);
-        const localWorkout = FALLBACK_WORKOUTS.find((w) => w.id === workoutId);
-        if (localWorkout && isMounted) {
-          setWorkout(localWorkout);
-        } else if (isMounted) {
-          setError("Failed to load workout details. The exercise might not exist or the server is unavailable.");
+      } catch {
+        // Fallback to local workout data if network error happens
+        const fallback = FALLBACK_WORKOUTS.find((w) => w.id === workoutId);
+        if (fallback) {
+          setWorkout(fallback);
+        } else {
+          setError("Workout not found.");
         }
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
-    };
+    }
 
     if (workoutId) {
-      fetchDetail();
+      loadWorkout();
     }
-    return () => {
-      isMounted = false;
-    };
   }, [workoutId]);
 
   const inPlan = workout ? isWorkoutInPlan(workout.id) : false;
